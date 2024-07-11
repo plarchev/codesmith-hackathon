@@ -10,6 +10,8 @@ let humidity = document.getElementById("humidity");
 let humidityImage = document.getElementById("humidity-image")
 let windSpeed = document.getElementById("wind-speed");
 let windSpeedImage = document.getElementById("wind-speed-image")
+let randomLocation = document.getElementById("random-location-btn")
+let random = false; // if we want to generate a random location weather
 let rawTemp; // for temperature conversion no rounding error
 let rawWind;
 
@@ -25,6 +27,12 @@ function formatAMPM(date) {
   return strTime;
 }
 
+function getRandomInRange(from, to, fixed) {
+  // fixed = # of decimal places
+  return (Math.random() * (to - from) + from).toFixed(fixed) * 1;
+  // .toFixed() returns string, so ' * 1' is a trick to convert to number
+}
+
 // API key
 const apiKey = "e159204fad8c305ce5401517cc46c680"
 
@@ -33,8 +41,20 @@ function getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (_position) => {
-          lat = _position.coords.latitude;
-          lon = _position.coords.longitude;
+          if (random) {
+            // guarentee mainland lat/lon
+            lat = getRandomInRange(30.3,48.5, 5)
+            lon = getRandomInRange(-116,-81, 5)
+          } else {
+            lat = _position.coords.latitude;
+            lon = _position.coords.longitude;
+          }
+          // lat = _position.coords.latitude;
+          // lon = _position.coords.longitude;
+          // // guarentee mainland lat/lon
+          // lat = getRandomInRange(30.3,48.5, 5)
+          // lon = getRandomInRange(-116,-81, 5)
+          
           fetchWeatherData(lat, lon);
           fetchCityName(lat,lon);
           fetchForecast(lat,lon);
@@ -51,8 +71,10 @@ function getLocation() {
   // use openweathermap api to access granular weather data
   function fetchWeatherData(lat, lon) {
     //API URL
+    console.log(lon)
     const base =
           `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`;
+    console.log(base)
     fetch(
         base,
       {
@@ -147,4 +169,24 @@ temp.addEventListener("click", (e) => {
     temp.innerText = Math.round(rawTemp) + '\u00B0' + 'F';
     windSpeed.innerText = Math.round(rawWind * 100) / 100 + 'mph'
   }
+})
+
+windSpeed.addEventListener("click", (e) => {
+  // convert C to F and F to C.
+  if (temp.innerText[temp.innerText.length - 1] === 'F') {
+    rawTemp = (rawTemp - 32) * (5/9);
+    rawWind = rawWind * 1.60934;
+    temp.innerText = Math.round(rawTemp) + '\u00B0' + 'C';
+    windSpeed.innerText = Math.round(rawWind * 100) / 100 + 'kph'
+  } else if (temp.innerText[temp.innerText.length - 1] === 'C') {
+    rawTemp = (rawTemp) * (9/5) + 32;
+    rawWind = rawWind / 1.60934;
+    temp.innerText = Math.round(rawTemp) + '\u00B0' + 'F';
+    windSpeed.innerText = Math.round(rawWind * 100) / 100 + 'mph'
+  }
+})
+
+randomLocation.addEventListener("click", (e) => {
+  random = true;
+  getLocation();
 })

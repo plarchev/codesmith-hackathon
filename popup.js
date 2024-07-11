@@ -10,6 +10,7 @@ let humidity = document.getElementById("humidity");
 let humidityImage = document.getElementById("humidity-image")
 let windSpeed = document.getElementById("wind-speed");
 let windSpeedImage = document.getElementById("wind-speed-image")
+let rawTemp; // for temperature conversion no rounding error
 
 // date object helper function
 function formatAMPM(date) {
@@ -66,6 +67,7 @@ function getLocation() {
         weather.innerText = data.current.weather[0].description;
         const weatherIcon = data.current.weather[0].icon
         // temperature
+        rawTemp = data.current.temp;
         temp.innerText = Math.round(data.current.temp) + '\u00B0' + 'F';
         // humidity img
         humidity.innerText = data.current.humidity + '%';
@@ -76,8 +78,8 @@ function getLocation() {
         content.style.opacity = 1;
         // obtain weather icon based off current weather
         weatherImage.src = `https://openweathermap.org/img/wn/${weatherIcon}@2x.png`
-        humidityImage.src = 'https://cdn-icons-png.freepik.com/512/9342/9342439.png'
-        windSpeedImage.src = 'https://static-00.iconduck.com/assets.00/wind-icon-2048x1563-xzh65ux5.png'
+        humidityImage.src = 'https://static-00.iconduck.com/assets.00/wind-icon-2048x1563-xzh65ux5.png'
+        windSpeedImage.src = 'https://cdn-icons-png.freepik.com/512/9342/9342439.png'
         // time data 
         const date = new Date(Date.now());
         console.log(typeof(date.toString()))
@@ -128,3 +130,15 @@ function fetchForecast(lat,lon) {
     });
 }
   getLocation();
+
+
+temp.addEventListener("click", (e) => {
+  // convert C to F and F to C.
+  if (temp.innerText[temp.innerText.length - 1] === 'F') {
+    rawTemp = (rawTemp - 32) * (5/9);
+    temp.innerText = Math.round(rawTemp) + '\u00B0' + 'C';
+  } else if (temp.innerText[temp.innerText.length - 1] === 'C') {
+    rawTemp = (rawTemp) * (9/5) + 32
+    temp.innerText = Math.round(rawTemp) + '\u00B0' + 'F';
+  }
+})

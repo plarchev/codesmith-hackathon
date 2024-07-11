@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "permissions": [
+    "geolocation"
+  ],
+  "name": "Weather App Extension",
+  "description": "Base Level Extension",
+  "version": "1.0",
+  "action": {
+    "default_popup": "weather-extension.html",
+    "default_icon": "weather_icon.jpeg"
+  }
+}
+

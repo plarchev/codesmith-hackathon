@@ -11,6 +11,7 @@ let humidityImage = document.getElementById("humidity-image")
 let windSpeed = document.getElementById("wind-speed");
 let windSpeedImage = document.getElementById("wind-speed-image")
 let rawTemp; // for temperature conversion no rounding error
+let rawWind;
 
 // date object helper function
 function formatAMPM(date) {
@@ -72,14 +73,15 @@ function getLocation() {
         // humidity img
         humidity.innerText = data.current.humidity + '%';
         // wind speed img 
+        rawWind = data.current.wind_speed;
         windSpeed.innerText = data.current.wind_speed + 'mph'
         // stop loading icon flashing once data is ingested
         loadingContainer.style.opacity = 0;
         content.style.opacity = 1;
         // obtain weather icon based off current weather
         weatherImage.src = `https://openweathermap.org/img/wn/${weatherIcon}@2x.png`
-        humidityImage.src = 'https://static-00.iconduck.com/assets.00/wind-icon-2048x1563-xzh65ux5.png'
-        windSpeedImage.src = 'https://cdn-icons-png.freepik.com/512/9342/9342439.png'
+        humidityImage.src = 'https://cdn-icons-png.freepik.com/512/9342/9342439.png'
+        windSpeedImage.src = 'https://static-00.iconduck.com/assets.00/wind-icon-2048x1563-xzh65ux5.png'
         // time data 
         const date = new Date(Date.now());
         console.log(typeof(date.toString()))
@@ -136,9 +138,13 @@ temp.addEventListener("click", (e) => {
   // convert C to F and F to C.
   if (temp.innerText[temp.innerText.length - 1] === 'F') {
     rawTemp = (rawTemp - 32) * (5/9);
+    rawWind = rawWind * 1.60934;
     temp.innerText = Math.round(rawTemp) + '\u00B0' + 'C';
+    windSpeed.innerText = Math.round(rawWind * 100) / 100 + 'kph'
   } else if (temp.innerText[temp.innerText.length - 1] === 'C') {
-    rawTemp = (rawTemp) * (9/5) + 32
+    rawTemp = (rawTemp) * (9/5) + 32;
+    rawWind = rawWind / 1.60934;
     temp.innerText = Math.round(rawTemp) + '\u00B0' + 'F';
+    windSpeed.innerText = Math.round(rawWind * 100) / 100 + 'mph'
   }
 })

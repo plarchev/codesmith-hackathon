@@ -8,7 +8,7 @@
   "version": "1.0",
   "action": {
     "default_popup": "weather-extension.html",
-    "default_icon": "icons8-weather-16.png"
+    "default_icon": "icons8-weather-32.png"
   },
   
   "icons": {

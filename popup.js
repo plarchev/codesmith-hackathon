@@ -11,9 +11,15 @@ let humidityImage = document.getElementById("humidity-image")
 let windSpeed = document.getElementById("wind-speed");
 let windSpeedImage = document.getElementById("wind-speed-image")
 let randomLocation = document.getElementById("random-location-btn")
+let internationalButton = document.getElementById("international-btn")
 let random = false; // if we want to generate a random location weather
+let international = false; // if we want to look at weather outside the USA
 let rawTemp; // for temperature conversion no rounding error
 let rawWind;
+
+const eagleAudio = new Audio("eagle-scream.mp3")
+// const EUAudio = new Audio("cant-believe.mp3")
+const EUAudio = new Audio("french-sound.mov")
 
 // date object helper function
 function formatAMPM(date) {
@@ -45,16 +51,14 @@ function getLocation() {
             // guarentee mainland lat/lon
             lat = getRandomInRange(30.3,48.5, 5)
             lon = getRandomInRange(-116,-81, 5)
+            if (international) {
+              lat = getRandomInRange(39,53, 5)
+              lon = getRandomInRange(-1, 33, 5)
+            }
           } else {
             lat = _position.coords.latitude;
             lon = _position.coords.longitude;
           }
-          // lat = _position.coords.latitude;
-          // lon = _position.coords.longitude;
-          // // guarentee mainland lat/lon
-          // lat = getRandomInRange(30.3,48.5, 5)
-          // lon = getRandomInRange(-116,-81, 5)
-          
           fetchWeatherData(lat, lon);
           fetchCityName(lat,lon);
           fetchForecast(lat,lon);
@@ -130,6 +134,7 @@ function getLocation() {
         const reverseGeo = data[0]; //city,state,country level information
         console.log(reverseGeo)
         city.innerText = `${reverseGeo.name}, ${reverseGeo.state}`;
+        if (international) city.innerText = `${reverseGeo.name}, ${reverseGeo.country}`;
     })
     .catch((e) => {
       console.log(e);
@@ -189,4 +194,18 @@ windSpeed.addEventListener("click", (e) => {
 randomLocation.addEventListener("click", (e) => {
   random = true;
   getLocation();
+})
+
+internationalButton.addEventListener("click", (e) => {
+  if (internationalButton.innerText === 'Visit Europe!') {
+    international = true;
+    getLocation();
+    internationalButton.innerText = 'Visit America!'
+    EUAudio.play();
+  } else if (internationalButton.innerText === 'Visit America!') {
+    international = false;
+    getLocation();
+    internationalButton.innerText = 'Visit Europe!'
+    eagleAudio.play();
+  }
 })
